@@ -1,129 +1,98 @@
-#include <stdio.h>
 #include <iostream>
-#include <stdlib.h>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
-
-class heap{
+class Heap{
     private:
-        int* Heap;
-        int sizeNotSorted;
-
-
-        void swap(int i, int j) {
-            int temp = Heap[i];
-            Heap[i] = Heap[j];
-            Heap[j] = temp;
-        }
-
-
-        int parent(int i){
-            return (i-1)/2;
-        }
-        int left(int i){
-            return 2*i+1;
-        }
-        int right(int i){
-            return 2*i+2;
-        }
-
-
-        void shiftUp(int i){
-            int l=parent(i);
-            if ((i>0)&&(Heap[l]>Heap[i])){
-                swap(parent(i),i);
-                shiftUp(l);
-            }
-        }
-
-
+        vector <int> h;
+        int parent(int i){return (i-1)/2;}
+        int left(int i){return 2*i+1;}
+        int right(int i){return 2*i+2;}
+        
         void shiftDown(int i){
-            int MAX=i;
-
-            if(left(i)<sizeNotSorted && Heap[left(i)]>Heap[MAX]){
-                MAX=left(i);
+            int minind=i;
+            int r= right(i);
+            int l= left(i);
+            
+            if (l<h.size() && h[l]<h[minind]){
+                minind=l;  
+                
             }
-
-            if(right(i)< sizeNotSorted && Heap[right(i)]>Heap[MAX]){
-                MAX=right(i);
+            if (r<h.size() && h[r]<h[minind]){
+                minind=r;
             }
             
-            if(MAX!=i){
-                swap(i,MAX);
-                shiftDown(MAX);
+            
+
+            
+            if(minind!=i){
+                swap(h[i],h[minind]);
+                shiftDown(minind);
             }
-
+            
         }
-
-
-        int formattedExtractMax() {
-            if (sizeNotSorted <= 0) {
-                return -1;
+        
+        void shiftUp(int i){
+            if (i>0){
+                if(h[i]<h[parent(i)]){
+                    swap(h[i],h[parent(i)]);
+                    shiftUp(parent(i));
+                }
             }
-
-            int min = Heap[0];
-
-                
-            swap(0, sizeNotSorted - 1);
-    
-            sizeNotSorted--;
-
-            shiftDown(0);
-            return min;  
+            
         }
-    
-
-        void buildHeap(){
-            for(int i=sizeNotSorted/2-1;i>=0;i--){
+        
+    public:
+        Heap(vector<int> arr){
+            h=arr;
+            for(int i=(h.size()/2)-1;i>=0;i--){
                 shiftDown(i);
             }
         }
-    
-
-    public:
-        heap(int* arr, int size){
-            this->Heap=new int[size];
-            this->sizeNotSorted=size;
-
-            for (int i = 0; i < size; i++) {
-                this->Heap[i] = arr[i];
-            }
+        int extractMin(){
+            
+            swap(h[0],h[h.size()-1]);
+            int rt=h.back();
+            h.pop_back();
+            shiftDown(0);
+            
+            return rt;
+            
         }
-        void heapSort(int * arr,int size){
-            buildHeap();
-            for (int i = sizeNotSorted - 1; i >= 1; i--) {
-                swap(0, i);  
-                sizeNotSorted--; 
-                shiftDown(0);  
-            }
-            for(int i=0;i<size;i++){
-                arr[i]=Heap[i];
-            }
-
-        }
-
         
+        
+        vector<int> HeapSort(){
+            vector<int> rtarr;
+            while(!(h.empty())){
+                rtarr.push_back(extractMin());
+            }
+            return rtarr;
+        }
+    
 };
 
-
 int main() {
-    // Sample array
-    int arr[] = {10, 20, 15, 30, 40, 50, 5};
-    int size = sizeof(arr) / sizeof(arr[0]); 
+    vector<int> arr;
+    arr.push_back(12);
+    arr.push_back(11);
+    arr.push_back(13);
+    arr.push_back(5);
+    arr.push_back(6);
+    arr.push_back(7);
+    
+    Heap h(arr);
 
-    heap h(arr, size);
 
-    // Perform heap sort
-    printf("Performing heap sort...\n");
-    h.heapSort(arr,size);
+    vector<int> sortedArr = h.HeapSort();
 
-    // Print sorted elements
-    printf("Sorted elements:\n");
-    for (int i = 0; i < size; i++) {
-        printf("%d ", arr[i]);
+
+    cout << "Sorted array: ";
+    for (int i=0;i<sortedArr.size();i++) {
+        cout << sortedArr[i] << " ";
     }
-    printf("\n");
+    cout << endl;
 
     return 0;
 }
