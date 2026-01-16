@@ -1,2 +1,2 @@
 # AlgorithmsDesignAndAnalysis
-This repository provides code to all the DSA problems
+This repository provides code to some standard Data Structures and Algorithms.
